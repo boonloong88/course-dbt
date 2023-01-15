@@ -1,0 +1,43 @@
+Week 1
+1.How many users do we have?
+Query:select count(*) from dev_db.dbt_boonloonghotmailcom.stg_postgres_users
+Answer: 130
+
+
+2.On average, how many orders do we receive per hour?
+Query:select * from dev_db.dbt_boonloonghotmailcom.stg_postgres_orders;
+
+with hourly_total as (
+    select
+    trunc(Created_at,'hour'),
+    count(*) as cnt
+    from dev_db.dbt_boonloonghotmailcom.stg_postgres_orders
+    group by 1
+    )
+
+select avg(cnt)
+from hourly_total
+
+2.Query:select avg(orders_number) from dev_db.dbt_boonloonghotmailcom.stg_postgres_aggregated_hour_orders
+Answer: 7.520833
+
+3.On average, how long does an order take from being placed to being delivered?
+Query:select avg(timediff(seconds,created_at,delivered_at)/86400) from dev_db.dbt_boonloonghotmailcom.stg_postgres_orders where delivered_at is not null;
+Answer: 3.89
+
+4.How many users have only made one purchase? Two purchases? Three+ purchases?
+One Purchase:
+Query: Select count(*) from (select user_guid from dev_db.dbt_boonloonghotmailcom.stg_postgres_orders group by user_guid having count(*) = 1) 
+Answer: 25
+
+Two Purchase:
+Query: Select count(*) from (select user_guid from dev_db.dbt_boonloonghotmailcom.stg_postgres_orders group by user_guid having count(*) = 2) 
+Answer: 28
+
+Three Purchases:
+Query: Select count(*) from (select user_guid from dev_db.dbt_boonloonghotmailcom.stg_postgres_orders group by user_guid having count(*) = 3) 
+Answer: 71
+
+5. On average, how many unique sessions do we have per hour?
+Query: Select avg(unique_sessions_number) from dev_db.dbt_boonloonghotmailcom.stg_postgres_aggregated_hour_unique_sessions;
+Answer:  16.32

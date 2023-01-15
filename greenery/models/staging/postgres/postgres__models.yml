@@ -1,0 +1,172 @@
+version: 2
+
+models:
+  - name: stg_postgres_users
+    description: Table containing information about the users (got from users source table) 
+    columns:
+      - name: user_id
+        tests:
+          - not_null
+          - unique
+
+      - name: first_name
+        tests:
+          - not_null
+
+      - name: last_name
+        tests:
+          - not_null
+
+      - name: email
+        tests:
+          - not_null
+          - unique
+
+      - name: phone_number
+      - name: created_at
+      - name: updated_at
+      - name: address_id
+
+  - name: stg_postgres_addresses
+    description: Table containing the addresses information (got from addresses source table)
+    columns:
+      - name: address_id
+        tests:
+          - not_null
+          - unique
+
+      - name: address
+        tests:
+          - not_null
+
+      - name: zipcode
+        tests:
+          - not_null
+
+      - name: state
+        tests:
+          - not_null
+
+      - name: country
+        tests:
+          - not_null
+
+  - name: stg_postgres_events
+    description: Table containing the events performed by users on the platform (got from events source table)
+    columns:
+      - name: event_id
+        tests:
+          - not_null
+          - unique
+
+      - name: session_id
+        tests:
+          - not_null
+
+      - name: user_id
+        tests:
+          - not_null
+          - relationships:
+              to: ref('stg_postgres_users')
+              field: user_id
+
+      - name: page_url
+      - name: created_at
+      - name: event_type
+
+  - name: stg_postgres_orders
+    description: Table containing orders made by the users (got from orders source table)
+    columns:
+      - name: order_id
+        tests:
+          - not_null
+          - unique
+
+      - name: user_id
+        tests:
+          - not_null
+          - relationships:
+              to: ref('stg_postgres_users')
+              field: user_id
+
+      - name: promo_id
+      - name: address_id
+        tests:
+          - not_null
+          - relationships:
+              to: ref('stg_postgres_addresses')
+              field: address_id
+
+      - name: created_at
+      - name: order_cost
+      - name: shipping_cost
+      - name: order_total
+      - name: tracking_id
+      - name: shipping_service
+      - name: estimated_delivery_at
+      - name: delivered_at
+      - name: status
+        tests:
+          - not_null
+
+  - name: stg_postgres_order_items
+    description: Relation table that associate products to the orders made (got from the order_items source table)
+    columns:
+      - name: order_id
+        tests:
+          - not_null
+          - relationships:
+              to: ref('stg_postgres_orders')
+              field: order_id
+
+      - name: product_id
+        tests:
+          - not_null
+          - relationships:
+              to: ref('stg_postgres_products')
+              field: product_id
+
+      - name: quantity
+
+  - name: stg_postgres_products
+    description: Table containing the information about the products (got from the products source table)
+    columns:
+      - name: product_id
+        tests:
+          - not_null
+          - unique
+
+      - name: name
+        tests:
+          - not_null
+
+      - name: price
+      - name: quantity
+
+  - name: stg_postgres_promos
+    description: Table containing the information about the promos (got from the promos source table)
+    columns:
+      - name: promo_id
+        tests:
+          - not_null
+          - unique
+
+      - name: discount
+      - name: status
+        tests:
+          - not_null
+          - accepted_values:
+              values: ['active', 'inactive']
+
+  # Answers to the 5 questions
+  - name: stg_postgres_aggregated_hour_orders
+    description: Table containing the number of orders placed aggregated by hour
+    columns:
+      - name: created_hour
+      - name: orders_number
+
+  - name: stg_postgres_aggregated_hour_unique_sessions
+    description: Table containing the number of unique sessions aggregated by hour
+    columns:
+      - name: created_hour
+      - name: unique_sessions_number

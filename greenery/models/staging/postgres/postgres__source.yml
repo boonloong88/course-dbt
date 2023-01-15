@@ -1,0 +1,22 @@
+version: 2
+
+sources:
+  - name: postgres
+    database: raw
+    schema: public
+    tables:
+    #Generate model
+    - name: orders
+    #Generate model
+    - name: order_items
+    #Generate model
+    - name: addresses
+    #Generate model
+    - name: users
+    #Generate model
+    - name: promos
+    #Generate model
+    - name: products
+    #Generate model
+    - name: events
+
