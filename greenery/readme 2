@@ -1,0 +1,41 @@
+1. 
+Q:What is our user repeat rate? 
+A:0.80 (Repeat Rate = Users who purchased 2 or more times / users who purchased)
+
+with users_orders as ( 
+     select 
+         u.user_id, 
+         count(distinct o.order_id) as number_of_orders 
+     from
+         dev_db.dbt_boonloonghotmailcom.stg_postgres_users as u inner join dev_db.dbt_boonloonghotmailcom.stg_postgres_orders as o on u.user_id = o.user_id 
+     group by u.user_id 
+     ) 
+
+select
+     sum(case when number_of_orders > 1 then 1 end)::decimal / count(*) as repeat_rate
+ from dev_db.dbt_boonloonghotmailcom.user_orders;
+
+
+2. 
+Q:What are good indicators of a user who will likely purchase again? 
+What about indicators of users who are likely NOT to purchase again? 
+If you had more data, what features would you want to look into to answer this question?
+A: Good indictors - high number of items purchased, frequent purchases, recent purchase
+   Indicators of users not to purchase again - low number of items purchased, few purchase, purchased a long time ago
+   More features: number of likes on the product, reviews on the products, time spent on the website
+
+3.
+Q:Did you find any “bad” data as you added and ran tests on your models? How did you go about either cleaning the data in the dbt model or adjusting your assumptions/tests?
+A:Did not manage to find any bad data
+
+4. 
+Q:Your stakeholders at Greenery want to understand the state of the data each day. 
+Explain how you would ensure these tests are passing regularly and how you would alert stakeholders about bad data getting through.
+A:I would run dbt run followed by dbt test (or dbt build to run both dbt run and dbt test) I would also store test failures by by setting the --store-failures flag while running dbt test or in the .yml file where models and tests are configured. 
+
+5
+Q:Orders changed from week 1 to week 2?
+A: 
+265f9aae-561a-4232-a78a-7052466e46b7
+e42ba9a9-986a-4f00-8dd2-5cf8462c74ea
+b4eec587-6bca-4b2a-b3d3-ef2db72c4a4f
