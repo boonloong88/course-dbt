@@ -1,0 +1,210 @@
+version: 2
+
+models:
+  - name: dim_users
+    description: Dimension table containing the main information about users
+    columns:
+      - name: user_id
+        description: Assume user_id unique and not_null
+        tests:
+          - not_null
+          - unique
+          - relationships:
+              to: ref('stg_postgres_users')
+              field: user_id
+
+      - name: first_name
+        description: Assume user's first_name not null
+        tests:
+          - not_null
+
+      - name: last_name
+        description: Assume user's last_name not null
+        tests:
+          - not_null
+
+      - name: email
+        description: Assume unique email and not null
+        tests:
+          - not_null
+          - unique
+
+      - name: phone_number
+        description: Assume user's phone number not null
+        tests:
+          - not_null
+
+      - name: address_id
+        description: Assume user's address not null. The address needs to exist in the stg_postgres_addresses model
+        tests:
+          - not_null
+          - relationships:
+              to: ref('stg_postgres_addresses')
+              field: address_id
+
+  - name: int_user_orders
+    description: Intermediate model created to join users along with orders they made
+    columns:
+      - name: user_id
+        description: Assume user_id not_null
+        tests:
+          - not_null
+          - relationships:
+              to: ref('stg_postgres_users')
+              field: user_id
+
+      - name: email
+        description: Assume email not null
+        tests:
+          - not_null
+
+      - name: order_id
+        description: Assume order id not null and unique.
+        tests:
+          - not_null
+          - unique
+          - relationships:
+              to: ref('stg_postgres_orders')
+              field: order_id
+
+  - name: fact_aggregated_user_orders
+    description: Fact table containing info of the users (id and email) and KPIs on the orders they made daily (total orders made)
+    columns:
+      - name: user_id
+        description: Assume user_id not_null.
+        tests:
+          - not_null
+          - relationships:
+              to: ref('stg_postgres_users')
+              field: user_id
+
+      - name: email
+        description: Assume email not null
+        tests:
+          - not_null
+
+      - name: total_day_orders
+        description: Assume total orders made by the users in a specific day is not null
+        tests:
+          - not_null
+
+  - name: dim_country_inhabitants
+    description: Dimension table containing the countries registered in the system along with the customers that live there.
+    columns:
+      - name: country
+        description: Country name is not null and needs to be found in the stg_postgres_addresses model.
+        tests:
+          - not_null
+          - relationships:
+              to: ref('stg_postgres_addresses')
+              field: country
+
+      - name: state
+        description: State name is not null.
+        tests:
+          - not_null
+
+      - name: country_inhabitants
+        description: The total inhabitants of a country is not null
+        tests:
+          - not_null
+
+  - name: int_user_events
+    description: Intermediate model that represents the events made by the users
+    columns:
+      - name: event_id
+        description: The id of the event generated is not null and unique. It needs to be found in the stg_postgres_events model.
+        tests:
+          - not_null
+          - unique
+          - relationships:
+              to: ref('stg_postgres_events')
+              field: event_id
+
+      - name: page_url
+        description: The page visited while the event has been generated.
+        tests:
+          - not_null
+
+      - name: user_id
+        description: The id of the user that generated the event is not null and the id needs to be found in the stg_postgres_users model.
+        tests:
+          - not_null
+          - relationships:
+              to: ref('stg_postgres_users')
+              field: user_id
+
+      - name: email
+        description: User's email is not null.
+        tests:
+          - not_null
+
+  - name: fact_aggregated_user_events
+    description: Fact table containing info of the users (id and email) and KPIs on the events they made daily (total events made)
+    columns:
+      - name: user_id
+        description: The user_id represent the id of the user that made the event so it's not null.
+        tests:
+          - not_null
+          - relationships:
+              to: ref('stg_postgres_users')
+              field: user_id
+
+      - name: email
+        description:  User's email is not null.
+        tests:
+          - not_null
+
+      - name: total_day_events
+        description: The total events made by the users in a specific day is not null
+        tests:
+          - not_null
+
+  - name: dim_products
+    description: Dimension table containing information about the products available on the platform.
+    columns:
+      - name: product_id
+        description: The id of the product is unique and not null. It needs to be found in the stg_postgres_products model.
+        tests:
+          - not_null
+          - unique
+          - relationships:
+              to: ref('stg_postgres_products')
+              field: product_id
+
+      - name: name
+        description: The product name is not null.
+        tests:
+          - not_null
+
+      - name: price
+        description: The price of the product is not null.
+        tests:
+          - not_null
+
+      - name: inventory
+        description: The stock inventory available for the product is not null.
+        tests:
+          - not_null
+
+  - name: fact_order_products
+    description: Fact table containing info of the orders made along with KPIs based on the products associated (total products for the order).
+    columns:
+      - name: order_id
+        description: The id of the order is not null and is unique. It needs to be found in the stg_postgres_orders model.
+        tests:
+          - not_null
+          - unique
+          - relationships:
+              to: ref('stg_postgres_orders')
+              field: order_id
+
+      - name: order_total
+        description: The total spent for the order is not null.
+        tests:
+          - not_null
+
+      - name: total_products
+        description: The number of products related to the order is not null.
+        tests:
+          - not_null
