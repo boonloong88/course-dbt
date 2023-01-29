@@ -74,8 +74,11 @@ models:
       - name: created_at
       - name: event_type
 
-  - name: stg_postgres_orders
+  - name: stg_postgres_order_items
     description: Table containing orders made by the users (got from orders source table)
+    tests:
+      - dbt_utils.expression_is_true:
+         expression: 'quantity > 0'
     columns:
       - name: order_id
         tests:

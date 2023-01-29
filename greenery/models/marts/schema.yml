@@ -42,9 +42,39 @@ models:
               to: ref('stg_postgres_addresses')
               field: address_id
 
+  - name: dim_products_convertion_rate
+    description: Dim table containing the convertion rate for each product
+    columns: 
+     - name: name
+       description: The name of the product
+       tests:
+        - not_null
+
+     - name: product_id
+       description: The id of the product
+       tests:
+        - not_null
+        - unique
+        - relationships:
+           to: ref('stg_postgres_products')
+           field: product_id
+
+     - name: product_convertion_rate
+       description: The convertion rate for the given product
+       tests:
+        - not_null
+        - dbt_utils.expression_is_true:
+              expression: '>= 0'
+
   - name: int_user_orders
     description: Intermediate model created to join users along with orders they made
     columns:
+      - name: record_key
+        description: The primary key for this model. Created through the surrogate_key macro.
+        tests:
+        - not_null
+        - unique
+
       - name: user_id
         description: Assume user_id not_null
         tests:
@@ -112,6 +142,12 @@ models:
   - name: int_user_events
     description: Intermediate model that represents the events made by the users
     columns:
+      - name: record_key
+        description: The primary key for this model. Created through the surrogate_key macro.
+        tests:
+         - not_null
+         - unique
+
       - name: event_id
         description: The id of the event generated is not null and unique. It needs to be found in the stg_postgres_events model.
         tests:
