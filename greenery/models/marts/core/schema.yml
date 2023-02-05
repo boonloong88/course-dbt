@@ -1,0 +1,18 @@
+version: 2
+
+models:
+  - name: int_platform_events
+    description: Table containing the events performed by users on the platform
+    columns:
+      - name: session_id
+        description: each event is related to a session and not null. it could be duplicated because multiple events can be related to the same session.
+        tests:
+          - not_null
+
+      - name: user_id
+        description:  each event is performed by a user. It's not null and needs to be found in the stg_users model.
+        tests:
+          - not_null
+          - relationships:
+              to: ref('stg_postgres_users')
+              field: user_id

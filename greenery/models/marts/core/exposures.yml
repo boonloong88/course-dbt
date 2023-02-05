@@ -1,0 +1,14 @@
+version: 2
+
+exposures:
+  - name: Funnel Dashboard
+    type: dashboard
+    maturity: medium
+    description: >
+      Exposure for the Funnel fact table
+    owner:
+      name: Boon Loong
+      email: boon_loong@hotmail.com
+    depends_on:
+      - ref('fact_general_funnel')
+      
