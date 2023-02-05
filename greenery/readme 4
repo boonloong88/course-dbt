@@ -1,0 +1,23 @@
+1. Which orders changed from week 3 to week 4? 
+select distinct order_id
+from  DEV_DB.DBT_boonloonghotmailcom.snapshot_orders
+where DBT_VALID_TO ::DATE = '2023-02-05'
+
+0e9b8ee9-ad0a-42f4-a778-e1dd3e6f6c51
+841074bf-571a-43a6-963c-ba7cbdb26c85
+df91aa85-bfc7-4c31-93ef-4cee8d00a343
+
+2.How are our users moving through the product funnel?
+Which steps in the funnel have largest drop off points?
+Both the "Add to carts" and "Checkouts" steps have large drop off points.
+
+select * from
+DEV_DB.DBT_boonloonghotmailcom.fact_general_funnel
+
+SESSIONS_WITH_VIEW	SESSIONS_WITH_CART	SESSIONS_WITH_CHECKOUT
+578	                467	                361
+
+Dashboard in Sigma: https://app.sigmacomputing.com/corise-dbt/workbook/BL-Dashboard-3pyeVBNn5RSYvgngJd9J1c
+
+
+3A. dbt has some useful features such as testing whether the data is unique and not null.
